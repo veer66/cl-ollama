@@ -12,7 +12,9 @@ _cl-ollama_ is an Ollama client for Common Lisp.
 
 ## Example
 
-```
+### Basic usage
+
+```Lisp
 CL-USER> (ql:quickload "cl-ollama")
 To load "cl-ollama":
   Load 1 ASDF system:
@@ -25,6 +27,17 @@ In computer science, an interpreter is a software component that directly ...
 ...
 ...
 CL-USER>
+```
+
+### How to switch to another model
+
+```Lisp
+CL-USER> (ql:quickload "cl-ollama" :silent t)
+("cl-ollama")
+CL-USER> (setq cl-ollama:*model-name* "phi3")
+"phi3"
+CL-USER> (cl-ollama:generate (r "What is an interpreter in computer science?") 
+	   (princ r))
 ```
 
 ## License
