@@ -32,7 +32,6 @@
 	(s (gensym))
 	(k (gensym))
 	(v (gensym))
-	(obj (gensym))
 	(url (gensym)))
     `(let ((,params (make-hash-table :test #'equal)))
        (loop for (,k . ,v) in ,key-values
@@ -53,17 +52,21 @@
 		    :url ,url
 		    :params ,params
 		    :status-code ,status))
-	   (let ((,s (utf8-input-stream:make-utf8-input-stream ,raw-resp)))
-	     (loop for ,line = (read-line ,s nil nil)
-		   while ,line
-		   do
-		      (let* ((,obj (com.inuoe.jzon:parse ,line))
-			     (,resp (gethash "response" ,obj)))
-			(progn
-			  ,@body)))))))))
+	   (if (streamp ,raw-resp)
+	       (let ((,s (utf8-input-stream:make-utf8-input-stream ,raw-resp)))
+		 (loop for ,line = (read-line ,s nil nil)
+		       while ,line
+		       do
+			  (let* ((,resp (com.inuoe.jzon:parse ,line)))
+			    (progn
+			      ,@body))))
+	       (let* ((,resp (com.inuoe.jzon:parse ,raw-resp)))
+		 (progn
+		   ,@body))))))))
 
 (defmacro generate ((resp prompt &key options keep-alive) &body body)
-  (let ((key-values (gensym)))
+  (let ((key-values (gensym))
+	(obj (gensym)))
     `(let ((,key-values '()))
        (push (cons "model" *model-name*) ,key-values)
        (push (cons "prompt" ,prompt) ,key-values)
@@ -71,5 +74,47 @@
 	 (push (cons "options" ,options) ,key-values))
        (when ,keep-alive
 	 (push (cons "keep_alive" ,keep-alive) ,key-values))
-       (do-ollama-request (,resp :post "generate" ,key-values)
-	 (progn ,@body)))))
+       (do-ollama-request (,obj :post "generate" ,key-values)
+	 (let ((,resp (gethash "response" ,obj)))
+	   ,@body)))))
+
+(defstruct message
+  role
+  content
+  image)
+
+(defun message-to-hash-tab (message)
+  (let ((tab (make-hash-table :test #'equal)))
+    (with-slots (role content image) message
+      (setf (gethash "role" tab) role)
+      (setf (gethash "content" tab) content)
+      (when image
+	(setf (gethash "image" tab) image)))
+    tab))
+
+(defun tab-to-plist-kw (tab)
+  (loop with plist = '()
+	for k being the hash-key of tab using (hash-value v)
+	as k* = (intern (string-upcase k) :keyword)
+	do
+	   (push v plist)
+	   (push k* plist)
+	finally (return plist)))
+
+(defmacro chat ((resp messages &key format options (stream t) keep-alive) &body body)
+  (let ((key-values (gensym))
+	(obj (gensym)))
+    `(let ((,key-values '()))
+       (push (cons "model" *model-name*) ,key-values)
+       (push (cons "messages" (map 'list #'message-to-hash-tab ,messages))
+	     ,key-values)
+       (when ,format
+	 (push (cons "format" ,format) ,key-values))
+       (when ,options
+	 (push (cons "options" ,options) ,key-values))
+       (push (cons "stream" ,stream) ,key-values)
+       (when ,keep-alive
+	 (push (cons "keep_alive" ,keep-alive) ,key-values))
+       (do-ollama-request (,obj :post "chat" ,key-values)
+	 (let ((,resp (tab-to-plist-kw (gethash "message" ,obj))))
+	   ,@body)))))

@@ -3,6 +3,10 @@
 
 _cl-ollama_ is an Ollama client for Common Lisp.
 
+## Status
+
+WIP
+
 ## Prerequisites
 
 * Ollama
@@ -38,6 +42,18 @@ CL-USER> (setq cl-ollama:*model-name* "phi3")
 "phi3"
 CL-USER> (cl-ollama:generate (r "What is an interpreter in computer science?") 
 	   (princ r))
+```
+
+### Chat
+
+```Lisp
+CL-USER> (ql:quickload "cl-ollama" :silent t)
+("cl-ollama")
+CL-USER> (cl-ollama::chat 
+	     (r (list (cl-ollama:make-message 
+		       :role "user" 
+		       :content "Why does the sky is yellow?")))
+	   (princ (getf r :CONTENT)))
 ```
 
 ## License
