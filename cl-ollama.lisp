@@ -8,6 +8,8 @@
 (defparameter *port* 11434)
 (defparameter *read-timeout* 300)
 
+(setq utf8-input-stream::*line-buffer-size* 32)
+
 (defun gen-url (verb)
   (format nil "~a://~a:~a/api/~a" *protocol* *host* *port* verb))
 
