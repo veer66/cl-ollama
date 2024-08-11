@@ -2,7 +2,7 @@
 
 (in-package #:cl-ollama)
 
-(defparameter *model-name* "llama3")
+(defparameter *model-name* "llama3.1:8b")
 (defparameter *protocol* "http")
 (defparameter *host* "localhost")
 (defparameter *port* 11434)
@@ -77,8 +77,8 @@
        (when ,keep-alive
 	 (push (cons "keep_alive" ,keep-alive) ,key-values))
        (do-ollama-request (,obj :post "generate" ,key-values)
-	 (let ((,resp (gethash "response" ,obj)))
-	   ,@body)))))
+			  (let ((,resp (gethash "response" ,obj)))
+			    ,@body)))))
 
 (defstruct message
   role
