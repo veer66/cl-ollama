@@ -25,74 +25,16 @@
    (want-stream :initarg :want-stream
 		:reader want-stream)))
 
-(defmacro do-ollama-request ((resp method verb key-values) &body body)
-  (let ((params (gensym))
-	(params-text (gensym))
-	(raw-resp (gensym))
-	(status (gensym))
-	(line (gensym))
-	(s (gensym))
-	(k (gensym))
-	(v (gensym))
-	(url (gensym)))
-    `(let ((,params (make-hash-table :test #'equal)))
-       (loop for (,k . ,v) in ,key-values
-	     do
-		(setf (gethash ,k ,params) ,v))
-       (let ((,params-text (com.inuoe.jzon:stringify ,params))
-	     (,url (gen-url ,verb)))
-	 (multiple-value-bind (,raw-resp ,status)
-	     (dex:request ,url
-			  :method ,method
-			  :content ,params-text
-			  :read-timeout *read-timeout*
-			  :want-stream t)
-	   (unless (= ,status 200)
-	     (error 'unable-to-fetch-data
-		    :want-stream t
-		    :http-method ,method
-		    :url ,url
-		    :params ,params
-		    :status-code ,status))
-	   (if (streamp ,raw-resp)
-	       (let ((,s (utf8-input-stream:make-utf8-input-stream ,raw-resp)))
-		 (loop for ,line = (read-line ,s nil nil)
-		       while ,line
-		       do
-			  (let* ((,resp (com.inuoe.jzon:parse ,line)))
-			    (progn
-			      ,@body))))
-	       (let* ((,resp (com.inuoe.jzon:parse ,raw-resp)))
-		 (progn
-		   ,@body))))))))
+(defun build-params-hash-tab (params)
+  (let ((param-hash-tab (make-hash-table :test #'equal)))
+    (loop for (k . v) in params
+	  do
+	     (setf (gethash k param-hash-tab) v)
+	  finally
+	     (return param-hash-tab))))
 
-(defmacro generate ((resp prompt &key options keep-alive) &body body)
-  (let ((key-values (gensym))
-	(obj (gensym)))
-    `(let ((,key-values '()))
-       (push (cons "model" *model-name*) ,key-values)
-       (push (cons "prompt" ,prompt) ,key-values)
-       (when ,options
-	 (push (cons "options" ,options) ,key-values))
-       (when ,keep-alive
-	 (push (cons "keep_alive" ,keep-alive) ,key-values))
-       (do-ollama-request (,obj :post "generate" ,key-values)
-			  (let ((,resp (gethash "response" ,obj)))
-			    ,@body)))))
-
-(defstruct message
-  role
-  content
-  image)
-
-(defun message-to-hash-tab (message)
-  (let ((tab (make-hash-table :test #'equal)))
-    (with-slots (role content image) message
-      (setf (gethash "role" tab) role)
-      (setf (gethash "content" tab) content)
-      (when image
-	(setf (gethash "image" tab) image)))
-    tab))
+(defun build-params-text (params)
+  (com.inuoe.jzon:stringify (build-params-hash-tab params)))
 
 (defun tab-to-plist-kw (tab)
   (loop with plist = '()
@@ -103,20 +45,101 @@
 	   (push k* plist)
 	finally (return plist)))
 
-(defmacro chat ((resp messages &key format options (stream t) keep-alive) &body body)
-  (let ((key-values (gensym))
-	(obj (gensym)))
-    `(let ((,key-values '()))
-       (push (cons "model" *model-name*) ,key-values)
-       (push (cons "messages" (map 'list #'message-to-hash-tab ,messages))
-	     ,key-values)
-       (when ,format
-	 (push (cons "format" ,format) ,key-values))
-       (when ,options
-	 (push (cons "options" ,options) ,key-values))
-       (push (cons "stream" ,stream) ,key-values)
-       (when ,keep-alive
-	 (push (cons "keep_alive" ,keep-alive) ,key-values))
-       (do-ollama-request (,obj :post "chat" ,key-values)
-	 (let ((,resp (tab-to-plist-kw (gethash "message" ,obj))))
-	   ,@body)))))
+(defun kw-plist-to-tab (kw-plist)
+  (loop with tab = (make-hash-table :test #'equal)
+	for (k v) on kw-plist
+	  by #'cddr
+	do
+	   (setf (gethash (string-downcase (symbol-name k)) tab)
+		 v)
+	finally
+	   (return tab)))
+
+(defun request (method verb params process-response)
+  (let ((params-text (build-params-text params))
+	(url (gen-url verb)))
+    (multiple-value-bind (raw-resp status)
+	(dex:request url
+		     :method method
+		     :content params-text
+		     :read-timeout *read-timeout*
+		     :want-stream t)
+      (unless (= status 200)
+	(error 'unable-to-fetch-data
+	       :want-stream t
+	       :http-method method
+	       :url url
+	       :params params
+	       :status-code status))
+      (if (streamp raw-resp)
+	  (let ((s (utf8-input-stream:make-utf8-input-stream raw-resp)))
+	    (loop for line = (read-line s nil nil)
+		  while line
+		  do
+		     (let* ((resp (com.inuoe.jzon:parse line)))
+		       (funcall process-response (tab-to-plist-kw resp)))))
+	  (let ((resp (com.inuoe.jzon:parse raw-resp)))
+	    (funcall process-response (tab-to-plist-kw resp)))))))
+
+(defun build-params-for-generation (prompt &key options keep-alive)
+  (let ((params '()))
+    (push (cons "model" *model-name*) params)
+    (push (cons "prompt" prompt) params)
+    (when options
+      (push (cons "options" options) params))
+    (when keep-alive
+      (push (cons "keep_alive" keep-alive) params))
+    params))
+
+(defun generate (prompt process-response &key options keep-alive)
+  (request :post
+	   "generate"
+	   (build-params-for-generation prompt
+					:options options
+					:keep-alive keep-alive)
+	   process-response))
+
+(defmacro do-generate ((resp prompt &key options keep-alive) &body body)
+  `(generate ,prompt
+     (lambda (,resp)
+       ,@body)
+     :options ,options
+     :keep-alive ,keep-alive))
+
+
+(defun build-params-for-chat (messages &key format options (stream t) keep-alive)
+  (let ((params '()))
+    (push (cons "model" *model-name*) params)
+    (push (cons "messages" (map 'list #'kw-plist-to-tab messages))
+	  params)
+    (when format
+      (push (cons "format" format) params))
+    (when options
+      (push (cons "options" options) params))
+    (push (cons "stream" stream) params)
+    (when keep-alive
+      (push (cons "keep_alive" keep-alive) params))
+    params))
+
+(defun chat (messages process-response &key format options (stream t) keep-alive)
+  (request :post
+	   "chat"
+	   (build-params-for-chat messages
+				  :format format
+				  :options options
+				  :stream stream
+				  :keep-alive keep-alive)
+	   (lambda (resp)
+	     (let ((resp* (copy-list resp)))
+	       (setf (getf resp* :MESSAGE)
+		     (tab-to-plist-kw (getf resp* :MESSAGE)))
+	       (funcall process-response resp*)))))
+
+(defmacro do-chat ((resp messages &key format options (stream t) keep-alive) &body body)
+  `(chat ,messages
+     (lambda (,resp)
+       ,@body)
+     :format ,format
+     :options ,options
+     :stream ,stream
+     :keep-alive ,keep-alive))

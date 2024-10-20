@@ -26,11 +26,11 @@ To load "cl-ollama":
 ; Loading "cl-ollama"
 ...................
 ("cl-ollama")
-CL-USER> (cl-ollama:generate (r "What is an interpreter in computer science?") (princ r))
-In computer science, an interpreter is a software component that directly ...
+CL-USER> (cl-ollama:do-generate (r "What is an interpreter in computer science?") (print r))
+
+(:DONE NIL :RESPONSE "In" :CREATED_AT "2024-10-20T14:31:18.642302463Z" :MODEL
+ "llama3.1:8b") 
 ...
-...
-CL-USER>
 ```
 
 ### How to switch to another model
@@ -40,8 +40,11 @@ CL-USER> (ql:quickload "cl-ollama" :silent t)
 ("cl-ollama")
 CL-USER> (setq cl-ollama:*model-name* "phi3")
 "phi3"
-CL-USER> (cl-ollama:generate (r "What is an interpreter in computer science?") 
-	   (princ r))
+CL-USER> (cl-ollama:do-generate (r "What is an interpreter in computer science?") (print r))
+
+(:DONE NIL :RESPONSE "An" :CREATED_AT "2024-10-20T14:35:46.316081045Z" :MODEL
+ "phi3") 
+...
 ```
 
 ### Chat
@@ -49,11 +52,14 @@ CL-USER> (cl-ollama:generate (r "What is an interpreter in computer science?")
 ```Lisp
 CL-USER> (ql:quickload "cl-ollama" :silent t)
 ("cl-ollama")
-CL-USER> (cl-ollama::chat 
-	     (r (list (cl-ollama:make-message 
-		       :role "user" 
-		       :content "Why does the sky is yellow?")))
-	   (princ (getf r :CONTENT)))
+CL-USER> (cl-ollama::do-chat (r (list '(:role "user"
+				                        :content "Why does the sky is yellow?")))
+	        (print r))
+
+(:DONE NIL :MESSAGE (:CONTENT "The" :ROLE "assistant") :CREATED_AT
+ "2024-10-20T14:37:17.289970817Z" :MODEL "llama3.1:8b") 
+
+...
 ```
 
 ## License
