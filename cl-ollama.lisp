@@ -217,3 +217,15 @@
     (dex:post (gen-url "copy")
 	      :content params-text
 	      :read-timeout *read-timeout*)))
+
+(defun build-params-for-deleting-a-model (name)
+  (let ((params '()))
+    (push (cons "name" name) params)
+    params))
+
+(defun delete-a-model (name)
+  (let* ((params (build-params-for-deleting-a-model name))
+	 (params-text (build-params-text params)))
+    (dex:delete (gen-url "delete")
+		:content params-text
+		:read-timeout *read-timeout*)))

@@ -119,6 +119,17 @@ CL-USER> (cl-ollama:copy-a-model "llama3.2" "m2")
 NIL
 ```
 
+### Delete a model
+
+```Lisp
+CL-USER> (cl-ollama:delete-a-model "m2")
+#()
+200 (8 bits, #xC8, #o310, #b11001000)
+#<HASH-TABLE :TEST EQUAL :COUNT 2 {1028A53BF3}>
+#<QURI.URI.HTTP:URI-HTTP http://localhost:11434/api/delete>
+NIL
+```
+
 ## License
 
 APACHE-2.0
