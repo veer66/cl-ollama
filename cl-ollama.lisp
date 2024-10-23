@@ -106,7 +106,6 @@
      :options ,options
      :keep-alive ,keep-alive))
 
-
 (defun build-params-for-chat (messages &key format options (stream t) keep-alive)
   (let ((params '()))
     (push (cons "model" *model-name*) params)
@@ -153,14 +152,14 @@
     (push (cons "modelfile" modelfile) params)
     params))
 
-(defun create (name modelfile process-response)
+(defun create-model (name modelfile process-response)
   (request :post
 	   "create"
 	   (build-params-for-creating-model name modelfile)
 	   process-response))
 
-(defmacro do-create ((resp name modelfile) &body body)
-  `(create ,name
-	   ,modelfile
-	   (lambda (,resp)
-	     ,@body)))
+(defmacro do-create-model ((resp name modelfile) &body body)
+  `(create-model ,name
+		 ,modelfile
+		 (lambda (,resp)
+		   ,@body)))

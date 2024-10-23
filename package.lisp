@@ -7,5 +7,5 @@
 	   #:do-chat
 	   #:generate
 	   #:do-generate
-	   #:create
-	   #:do-create))
+	   #:create-model
+	   #:do-create-model))

@@ -65,7 +65,7 @@ CL-USER> (cl-ollama::do-chat (r (list '(:role "user"
 ### Create a model
 
 ```Lisp
-CL-USER> (cl-ollama:do-create (r "my-model-2" "FROM llama3.2")
+CL-USER> (cl-ollama:do-create-model (r "my-model-2" "FROM llama3.2")
 	   (print r))
 
 (:STATUS
