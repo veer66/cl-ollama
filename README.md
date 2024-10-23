@@ -144,9 +144,7 @@ CL-USER> (cl-ollama:do-pull-model (r "phi3") (print r))
 
 ### Push a model
 
-```Lisp
-
-```
+Didn't test yet
 
 ### Generate Embeddings
 
