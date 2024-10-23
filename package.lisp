@@ -13,4 +13,7 @@
 	   #:list-local-models
 	   #:show-model-information
 	   #:copy-model
-	   #:delete-model))
+	   #:delete-model
+	   #:pull-model
+	   #:push-model
+	   #:generate-embeddings))
