@@ -9,4 +9,5 @@
 	   #:do-generate
 	   #:create-model
 	   #:do-create-model
-	   #:create-blob))
+	   #:create-blob
+	   #:list-local-models))

@@ -84,6 +84,20 @@ CL-USER> (cl-ollama:create-blob #P"/a/path/to/llm/llama-2-7b.Q4_K_M.gguf" "sha25
 NIL
 ```
 
+### List local models
+
+```Lisp
+CL-USER> (cl-ollama:list-local-models)
+(:MODELS
+ (:DETAILS
+  (:QUANTIZATION_LEVEL "Q4_K_M" :PARAMETER_SIZE "3.2B" :FAMILIES #("llama")
+   :FAMILY "llama" :FORMAT "gguf" :PARENT_MODEL "")
+  :DIGEST "c8cb353161296fb7fd1a0507b8693bd0ab9f9dc066b3b55057032e5acbfa0911"
+  :SIZE 2019393189 :MODIFIED_AT "2024-10-23T11:38:33.552233884+07:00" :MODEL
+  "my-model-3:latest" :NAME "my-model-3:latest")
+...
+```
+
 ## License
 
 APACHE-2.0

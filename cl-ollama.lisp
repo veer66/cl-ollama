@@ -171,3 +171,16 @@
   (dex:post (gen-url "blobs" :suffix digest)
 	    :content file-pathname
 	    :read-timeout *read-timeout*))
+
+(defun list-local-models ()
+  (let* ((raw-resp (dex:get (gen-url "tags")
+			    :read-timeout *read-timeout*))
+	 (resp (com.inuoe.jzon:parse raw-resp))
+	 (models (gethash "models" resp)))
+    (cons :models
+	  (loop for model across models
+		collect
+		(let ((details (gethash "details" model)))
+		  (setf (gethash "details" model)
+			(tab-to-plist-kw details))
+		  (tab-to-plist-kw model))))))
