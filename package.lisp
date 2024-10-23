@@ -8,4 +8,5 @@
 	   #:generate
 	   #:do-generate
 	   #:create-model
-	   #:do-create-model))
+	   #:do-create-model
+	   #:create-blob))

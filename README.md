@@ -73,7 +73,17 @@ CL-USER> (cl-ollama:do-create-model (r "my-model-2" "FROM llama3.2")
 ...
 ```
 
+### Create a Blob
+
+```Lisp
+CL-USER> (cl-ollama:create-blob #P"/a/path/to/llm/llama-2-7b.Q4_K_M.gguf" "sha256:4567208c2221da5a9f2ded6cc26ce58dd47d0410902c3f57a4a3ed104ce51b0b")
+#()
+201 (8 bits, #xC9, #o311, #b11001001)
+#<HASH-TABLE :TEST EQUAL :COUNT 2 {1024CC3CF3}>
+#<QURI.URI.HTTP:URI-HTTP http://localhost:11434/api/blobs/sha256:4567208c2221da5a9f2ded6cc26ce58dd47d0410902c3f57a4a3ed104ce51b0b>
+NIL
+```
+
 ## License
 
 APACHE-2.0
-

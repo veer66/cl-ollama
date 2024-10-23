@@ -10,8 +10,11 @@
 
 (setq utf8-input-stream::*line-buffer-size* 32)
 
-(defun gen-url (verb)
-  (format nil "~a://~a:~a/api/~a" *protocol* *host* *port* verb))
+(defun gen-url (verb &key (suffix ""))
+  (let ((url (format nil "~a://~a:~a/api/~a" *protocol* *host* *port* verb)))
+    (if (and suffix (> (length suffix) 0))
+	(concatenate 'string url "/" suffix)
+	url)))
 
 (define-condition unable-to-fetch-data (error)
   ((status-code :initarg :status-code
@@ -163,3 +166,8 @@
 		 ,modelfile
 		 (lambda (,resp)
 		   ,@body)))
+
+(defun create-blob (file-pathname digest)
+  (dex:post (gen-url "blobs" :suffix digest)
+	    :content file-pathname
+	    :read-timeout *read-timeout*))
