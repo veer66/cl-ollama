@@ -130,6 +130,24 @@ CL-USER> (cl-ollama:delete-model "m2")
 NIL
 ```
 
+### Pull a model
+
+```Lisp
+CL-USER> (cl-ollama:do-pull-model (r "phi3") (print r))
+
+(:STATUS "pulling manifest") 
+(:COMPLETED 2176177120 :TOTAL 2176177120 :DIGEST
+ "sha256:633fc5be925f9a484b61d6f9b9a78021eeb462100bd557309f01ba84cac26adf"
+ :STATUS "pulling 633fc5be925f") 
+...
+```
+
+### Push a model
+
+```Lisp
+
+```
+
 ## License
 
 APACHE-2.0

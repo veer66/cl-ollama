@@ -229,3 +229,47 @@
     (dex:delete (gen-url "delete")
 		:content params-text
 		:read-timeout *read-timeout*)))
+
+(defun build-params-for-pulling-model (name insecure stream)
+  (let ((params '()))
+    (push (cons "name" name) params)
+    (when insecure
+      (push (cons "insecure" t) params))
+    (when stream
+      (push (cons "stream" t) params))
+    params))
+
+(defun pull-model (name process-response &key insecure stream)
+  (request :post
+	   "pull"
+	   (build-params-for-pulling-model name insecure stream)
+	   process-response))
+
+(defmacro do-pull-model ((resp name &key insecure stream) &body body)
+  `(pull-model ,name
+	       (lambda (,resp)
+		 ,@body)
+	       :insecure ,insecure
+	       :stream ,stream))
+
+(defun build-params-for-pushing-model (name insecure stream)
+  (let ((params '()))
+    (push (cons "name" name) params)
+    (when insecure
+      (push (cons "insecure" t) params))
+    (when stream
+      (push (cons "stream" t) params))
+    params))
+
+(defun push-model (name process-response &key insecure stream)
+  (request :post
+	   "push"
+	   (build-params-for-pushing-model name insecure stream)
+	   process-response))
+
+(defmacro do-push-model ((resp name &key insecure stream) &body body)
+  `(push-model ,name
+	       (lambda (,resp)
+		 ,@body)
+	       :insecure ,insecure
+	       :stream ,stream))

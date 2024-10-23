@@ -15,5 +15,7 @@
 	   #:copy-model
 	   #:delete-model
 	   #:pull-model
+	   #:do-pull-model
 	   #:push-model
+	   #:do-push-model
 	   #:generate-embeddings))
