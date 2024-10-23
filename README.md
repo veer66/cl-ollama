@@ -3,11 +3,7 @@
 
 _cl-ollama_ is an Ollama client for Common Lisp.
 
-## Status
-
-WIP
-
-## Prerequisites
+## Prerequisitess
 
 * Ollama
 * SBCL
