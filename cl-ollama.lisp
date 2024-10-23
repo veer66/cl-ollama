@@ -121,6 +121,13 @@
       (push (cons "keep_alive" keep-alive) params))
     params))
 
+(defun wrap-chat-process-response (process-response)
+  (lambda (resp)
+    (let ((resp* (copy-list resp)))
+      (setf (getf resp* :MESSAGE)
+	    (tab-to-plist-kw (getf resp* :MESSAGE)))
+      (funcall process-response resp*))))
+
 (defun chat (messages process-response &key format options (stream t) keep-alive)
   (request :post
 	   "chat"
@@ -129,11 +136,7 @@
 				  :options options
 				  :stream stream
 				  :keep-alive keep-alive)
-	   (lambda (resp)
-	     (let ((resp* (copy-list resp)))
-	       (setf (getf resp* :MESSAGE)
-		     (tab-to-plist-kw (getf resp* :MESSAGE)))
-	       (funcall process-response resp*)))))
+	   (wrap-chat-process-response process-response)))
 
 (defmacro do-chat ((resp messages &key format options (stream t) keep-alive) &body body)
   `(chat ,messages
