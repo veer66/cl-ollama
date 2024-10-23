@@ -53,8 +53,8 @@ CL-USER> (cl-ollama:do-generate (r "What is an interpreter in computer science?"
 CL-USER> (ql:quickload "cl-ollama" :silent t)
 ("cl-ollama")
 CL-USER> (cl-ollama::do-chat (r (list '(:role "user"
-				                        :content "Why does the sky is yellow?")))
-	        (print r))
+                                        :content "Why does the sky is yellow?")))
+            (print r))
 
 (:DONE NIL :MESSAGE (:CONTENT "The" :ROLE "assistant") :CREATED_AT
  "2024-10-20T14:37:17.289970817Z" :MODEL "llama3.1:8b")
@@ -66,7 +66,7 @@ CL-USER> (cl-ollama::do-chat (r (list '(:role "user"
 
 ```Lisp
 CL-USER> (cl-ollama:do-create-model (r "my-model-2" "FROM llama3.2")
-	   (print r))
+       (print r))
 
 (:STATUS
  "using existing layer sha256:dde5aa3fc5ffc17176b5e8bdc82f587b24b2678c6c66101bf7da77af9f7ccdff")
