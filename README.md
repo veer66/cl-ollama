@@ -111,7 +111,7 @@ CL-USER> (cl-ollama::show-model-information "llama3.2")
 ### Copy a model
 
 ```Lisp
-CL-USER> (cl-ollama:copy-a-model "llama3.2" "m2")
+CL-USER> (cl-ollama:copy-model "llama3.2" "m2")
 #()
 200 (8 bits, #xC8, #o310, #b11001000)
 #<HASH-TABLE :TEST EQUAL :COUNT 2 {1036E91C93}>
@@ -122,7 +122,7 @@ NIL
 ### Delete a model
 
 ```Lisp
-CL-USER> (cl-ollama:delete-a-model "m2")
+CL-USER> (cl-ollama:delete-model "m2")
 #()
 200 (8 bits, #xC8, #o310, #b11001000)
 #<HASH-TABLE :TEST EQUAL :COUNT 2 {1028A53BF3}>

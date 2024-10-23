@@ -12,5 +12,5 @@
 	   #:create-blob
 	   #:list-local-models
 	   #:show-model-information
-	   #:copy-a-model
-	   #:delete-a-model))
+	   #:copy-model
+	   #:delete-model))

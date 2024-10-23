@@ -205,26 +205,26 @@
 	  (tab-to-plist-kw (gethash "details" resp)))
     (tab-to-plist-kw resp)))
 
-(defun build-params-for-copying-a-model (source destination)
+(defun build-params-for-copying-model (source destination)
   (let ((params '()))
     (push (cons "source" source) params)
     (push (cons "destination" destination) params)
     params))
 
-(defun copy-a-model (source destination)
-  (let* ((params (build-params-for-copying-a-model source destination))
+(defun copy-model (source destination)
+  (let* ((params (build-params-for-copying-model source destination))
 	 (params-text (build-params-text params)))
     (dex:post (gen-url "copy")
 	      :content params-text
 	      :read-timeout *read-timeout*)))
 
-(defun build-params-for-deleting-a-model (name)
+(defun build-params-for-deleting-model (name)
   (let ((params '()))
     (push (cons "name" name) params)
     params))
 
-(defun delete-a-model (name)
-  (let* ((params (build-params-for-deleting-a-model name))
+(defun delete-model (name)
+  (let* ((params (build-params-for-deleting-model name))
 	 (params-text (build-params-text params)))
     (dex:delete (gen-url "delete")
 		:content params-text
