@@ -144,7 +144,6 @@
      :stream ,stream
      :keep-alive ,keep-alive))
 
-
 (defun build-params-for-creating-model (name modelfile)
   (let ((params '()))
     (push (cons "name" name) params)
