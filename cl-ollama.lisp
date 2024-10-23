@@ -184,3 +184,23 @@
 		  (setf (gethash "details" model)
 			(tab-to-plist-kw details))
 		  (tab-to-plist-kw model))))))
+
+(defun build-params-for-showing-model-information (name verbose)
+  (let ((params '()))
+    (push (cons "name" name) params)
+    (when verbose
+      (push (cons "verbose" t) params))
+    params))
+
+(defun show-model-information (name &key verbose)
+  (let* ((params (build-params-for-showing-model-information name verbose))
+	 (params-text (build-params-text params))
+	 (raw-resp (dex:post (gen-url "show")
+			     :content params-text
+			     :read-timeout *read-timeout*))
+	 (resp (com.inuoe.jzon:parse raw-resp)))
+    (setf (gethash "model_info" resp)
+	  (tab-to-plist-kw (gethash "model_info" resp)))
+    (setf (gethash "details" resp)
+	  (tab-to-plist-kw (gethash "details" resp)))
+    (tab-to-plist-kw resp)))

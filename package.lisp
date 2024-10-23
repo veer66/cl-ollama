@@ -10,4 +10,5 @@
 	   #:create-model
 	   #:do-create-model
 	   #:create-blob
-	   #:list-local-models))
+	   #:list-local-models
+	   #:show-model-information))
