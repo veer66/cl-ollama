@@ -97,7 +97,7 @@ CL-USER> (cl-ollama:list-local-models)
 ### Show model information
 
 ```Lisp
-CL-USER> (cl-ollama::show-model-information "llama3.2")
+CL-USER> (cl-ollama:show-model-information "llama3.2")
 (:MODIFIED_AT "2024-10-23T10:54:07.678378774+07:00" :MODEL_INFO
  (:TOKENIZER.GGML.TOKENS NULL :TOKENIZER.GGML.TOKEN_TYPE NULL
   :TOKENIZER.GGML.PRE "llama-bpe" :TOKENIZER.GGML.MODEL "gpt2"
