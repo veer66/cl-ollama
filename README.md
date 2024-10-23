@@ -148,6 +148,18 @@ CL-USER> (cl-ollama:do-pull-model (r "phi3") (print r))
 
 ```
 
+### Generate Embeddings
+
+```Lisp
+CL-USER> (cl-ollama:generate-embeddings "llama3.2" "I saw a cat.")
+(:PROMPT_EVAL_COUNT 5 :LOAD_DURATION 1475494 :TOTAL_DURATION 366785449
+ :EMBEDDINGS
+ #(#(-0.00517866d0 0.01042184d0 0.0022142697d0 -0.007714285d0 -0.0073792576d0
+     -0.0058945795d0 0.013783175d0 0.012611829d0 3.306841d-4 -0.013258213d0
+     0.019619025d0 -0.0069621354d0 0.008238591d0 0.016223108d0 -0.0037654745d0
+...
+```
+
 ## License
 
 APACHE-2.0
