@@ -204,3 +204,16 @@
     (setf (gethash "details" resp)
 	  (tab-to-plist-kw (gethash "details" resp)))
     (tab-to-plist-kw resp)))
+
+(defun build-params-for-copying-a-model (source destination)
+  (let ((params '()))
+    (push (cons "source" source) params)
+    (push (cons "destination" destination) params)
+    params))
+
+(defun copy-a-model (source destination)
+  (let* ((params (build-params-for-copying-a-model source destination))
+	 (params-text (build-params-text params)))
+    (dex:post (gen-url "copy")
+	      :content params-text
+	      :read-timeout *read-timeout*)))

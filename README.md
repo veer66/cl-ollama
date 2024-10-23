@@ -108,6 +108,17 @@ CL-USER> (cl-ollama::show-model-information "llama3.2")
 ...
 ```
 
+### Copy a model
+
+```Lisp
+CL-USER> (cl-ollama:copy-a-model "llama3.2" "m2")
+#()
+200 (8 bits, #xC8, #o310, #b11001000)
+#<HASH-TABLE :TEST EQUAL :COUNT 2 {1036E91C93}>
+#<QURI.URI.HTTP:URI-HTTP http://localhost:11434/api/copy>
+NIL
+```
+
 ## License
 
 APACHE-2.0
