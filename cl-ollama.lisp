@@ -143,3 +143,22 @@
      :options ,options
      :stream ,stream
      :keep-alive ,keep-alive))
+
+
+(defun build-params-for-creating-model (name modelfile)
+  (let ((params '()))
+    (push (cons "name" name) params)
+    (push (cons "modelfile" modelfile) params)
+    params))
+
+(defun create (name modelfile process-response)
+  (request :post
+	   "create"
+	   (build-params-for-creating-model name modelfile)
+	   process-response))
+
+(defmacro do-create ((resp name modelfile) &body body)
+  `(create ,name
+	   ,modelfile
+	   (lambda (,resp)
+	     ,@body)))

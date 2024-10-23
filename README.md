@@ -62,6 +62,17 @@ CL-USER> (cl-ollama::do-chat (r (list '(:role "user"
 ...
 ```
 
+### Create a model
+
+```Lisp
+CL-USER> (cl-ollama:do-create (r "my-model-2" "FROM llama3.2")
+	   (print r))
+
+(:STATUS
+ "using existing layer sha256:dde5aa3fc5ffc17176b5e8bdc82f587b24b2678c6c66101bf7da77af9f7ccdff")
+...
+```
+
 ## License
 
 APACHE-2.0

@@ -6,4 +6,6 @@
 	   #:chat
 	   #:do-chat
 	   #:generate
-	   #:do-generate))
+	   #:do-generate
+	   #:create
+	   #:do-create))
