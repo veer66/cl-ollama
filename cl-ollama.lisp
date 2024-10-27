@@ -2,7 +2,7 @@
 
 (in-package #:cl-ollama)
 
-(defparameter *model-name* "llama3.1:8b")
+(defparameter *model-name* "llama3.2")
 (defparameter *protocol* "http")
 (defparameter *host* "localhost")
 (defparameter *port* 11434)
