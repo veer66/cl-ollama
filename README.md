@@ -145,7 +145,7 @@ Didn't test yet
 ### Generate Embeddings
 
 ```Lisp
-CL-USER> (cl-ollama:generate-embeddings "llama3.2" "I saw a cat.")
+CL-USER> (cl-ollama:generate-embeddings "I saw a cat.")
 (:PROMPT_EVAL_COUNT 5 :LOAD_DURATION 1475494 :TOTAL_DURATION 366785449
  :EMBEDDINGS
  #(#(-0.00517866d0 0.01042184d0 0.0022142697d0 -0.007714285d0 -0.0073792576d0

@@ -274,9 +274,9 @@
 	       :insecure ,insecure
 	       :stream ,stream))
 
-(defun build-params-for-generating-embeddings (model input truncate options keep-alive)
+(defun build-params-for-generating-embeddings (input truncate options keep-alive)
   (let ((params '()))
-    (push (cons "model" model) params)
+    (push (cons "model" *model-name*) params)
     (push (cons "input" input) params)
     (unless truncate
       (push (cons "truncate" nil) params))
@@ -286,9 +286,9 @@
       (push (cons "keep-alive" keep-alive) params))
     params))
 
-(defun generate-embeddings (model input &key (truncate t) options keep-alive)
+(defun generate-embeddings (input &key (truncate t) options keep-alive)
   (let* ((params (build-params-for-generating-embeddings
-		  model input truncate options keep-alive))
+		  input truncate options keep-alive))
 	 (params-text (build-params-text params))
 	 (raw-resp (dex:post (gen-url "embed")
 			     :content params-text
