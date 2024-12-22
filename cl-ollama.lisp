@@ -84,7 +84,7 @@
 	  (let ((resp (com.inuoe.jzon:parse raw-resp)))
 	    (funcall process-response (tab-to-plist-kw resp)))))))
 
-(defun build-params-for-generation (prompt &key options keep-alive)
+(defun build-params-for-generation (prompt &key options keep-alive suffix)
   (let ((params '()))
     (push (cons "model" *model-name*) params)
     (push (cons "prompt" prompt) params)
@@ -92,22 +92,26 @@
       (push (cons "options" options) params))
     (when keep-alive
       (push (cons "keep_alive" keep-alive) params))
+    (when suffix
+      (push (cons "suffix" suffix) params))
     params))
 
-(defun generate (prompt process-response &key options keep-alive)
+(defun generate (prompt process-response &key options keep-alive suffix)
   (request :post
 	   "generate"
 	   (build-params-for-generation prompt
 					:options options
-					:keep-alive keep-alive)
+					:keep-alive keep-alive
+					:suffix suffix)
 	   process-response))
 
-(defmacro do-generate ((resp prompt &key options keep-alive) &body body)
+(defmacro do-generate ((resp prompt &key options keep-alive suffix) &body body)
   `(generate ,prompt
      (lambda (,resp)
        ,@body)
      :options ,options
-     :keep-alive ,keep-alive))
+     :keep-alive ,keep-alive
+     :suffix ,suffix))
 
 (defun build-params-for-chat (messages &key format options (stream t) keep-alive)
   (let ((params '()))
