@@ -29,6 +29,32 @@ CL-USER> (cl-ollama:do-generate (r "What is an interpreter in computer science?"
 ...
 ```
 
+#### Use suffix parameter
+
+An example adapted from https://github.com/ollama/ollama/pull/5207#issue-2367383300
+
+```Lisp
+CL-USER> (setq cl-ollama::*model-name* "deepseek-coder-v2")
+"deepseek-coder-v2"
+CL-USER> (cl-ollama:do-generate (r "def add("
+                                 :suffix "return c"
+                                 :options (let ((h (make-hash-table)))
+                                             (setf (gethash :temperature h) 0)
+                                             h)
+                                 :stream nil)
+             (print r))
+
+(:EVAL_DURATION 929000000 :EVAL_COUNT 14 :PROMPT_EVAL_DURATION 78000000
+ :PROMPT_EVAL_COUNT 9 :LOAD_DURATION 90489362 :TOTAL_DURATION 1098952008
+ :CONTEXT
+ #(100003 1558 962 7 100002 2136 258 100004 64 11 65 1780 185 300 258 403 245
+   919 270 185 251)
+ :DONE_REASON "stop" :DONE T :RESPONSE "a,b):
+    c = a + b
+    "
+ :CREATED_AT "2024-12-22T15:27:25.147572535Z" :MODEL "deepseek-coder-v2") 
+```
+
 ### How to switch to another model
 
 ```Lisp

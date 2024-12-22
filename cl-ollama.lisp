@@ -59,14 +59,16 @@
 	   (return tab)))
 
 (defun request (method verb params process-response)
-  (let ((params-text (build-params-text params))
+  (let ((stream-pair (assoc "stream" params :test #'equal))
+	(params-text (build-params-text params))
 	(url (gen-url verb)))
     (multiple-value-bind (raw-resp status)
 	(dex:request url
 		     :method method
 		     :content params-text
 		     :read-timeout *read-timeout*
-		     :want-stream t)
+		     :want-stream (not (and stream-pair
+					    (not (cdr stream-pair)))))
       (unless (= status 200)
 	(error 'unable-to-fetch-data
 	       :want-stream t
@@ -84,7 +86,7 @@
 	  (let ((resp (com.inuoe.jzon:parse raw-resp)))
 	    (funcall process-response (tab-to-plist-kw resp)))))))
 
-(defun build-params-for-generation (prompt &key options keep-alive suffix)
+(defun build-params-for-generation (prompt &key options keep-alive suffix (stream t))
   (let ((params '()))
     (push (cons "model" *model-name*) params)
     (push (cons "prompt" prompt) params)
@@ -94,24 +96,28 @@
       (push (cons "keep_alive" keep-alive) params))
     (when suffix
       (push (cons "suffix" suffix) params))
+    (unless stream
+      (push (cons "stream" stream) params))
     params))
 
-(defun generate (prompt process-response &key options keep-alive suffix)
+(defun generate (prompt process-response &key options keep-alive suffix (stream t))
   (request :post
 	   "generate"
 	   (build-params-for-generation prompt
 					:options options
 					:keep-alive keep-alive
-					:suffix suffix)
+					:suffix suffix
+					:stream stream)
 	   process-response))
 
-(defmacro do-generate ((resp prompt &key options keep-alive suffix) &body body)
+(defmacro do-generate ((resp prompt &key options keep-alive suffix (stream t)) &body body)
   `(generate ,prompt
      (lambda (,resp)
        ,@body)
      :options ,options
      :keep-alive ,keep-alive
-     :suffix ,suffix))
+     :suffix ,suffix
+     :stream ,stream))
 
 (defun build-params-for-chat (messages &key format options (stream t) keep-alive)
   (let ((params '()))
